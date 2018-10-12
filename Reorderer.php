@@ -46,12 +46,11 @@ class Reorderer
     }
 
 
-
-    private function getAllDbTables(){
-        $query = "SELECT table_name FROM information_schema.tables WHERE table_schema=dbName;";
+    public function getAllDbTables(){
+//        echo 'getin all';
+        $query = "SELECT table_name FROM information_schema.tables WHERE table_schema=:dbName;";
         $params = ['dbName'=>$this->dbName];
         return $this->executeQuery($query,$params);
-
     }
 
     private function executeQuery($query,array $params = []){
@@ -60,10 +59,9 @@ class Reorderer
         foreach($params as $key=>$param){
             $stmt->bindParam(':'.$key,$param);
         }
-        echo 'I AM DOING EEEEET';
 
         $stmt->execute();
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
 

@@ -29,6 +29,9 @@
         .pad-15{
             padding:15px
         }
+        .margin-vert-25{
+            margin:25px 0 25px 0;
+        }
     </style>
 </head>
 <body>
@@ -41,7 +44,7 @@
         </div>
         <div class="form-group">
             <label for="dbname">Db Name</label>
-            <input name="dbname"  type="text" class="form-control" id="dbname" placeholder="production_dont_touch" value="defdb">
+            <input name="dbname"  type="text" class="form-control" id="dbname" placeholder="production_dont_touch" value="pocofull0810">
         </div>
         <div class="form-group">
             <label for="port">port</label>
@@ -88,13 +91,27 @@
                 </div>
             </div>
         </div>
+
+        <div id="accordeon" class="margin-vert-25" style="display:none">
+
+            <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#dbTablesList" aria-expanded="false" aria-controls="collapseExample">
+                Select Tables that need to be adjusted. Total: <span id="tableCount"></span>
+            </button>
+            <div class="collapse" id="dbTablesList">
+
+            </div>
+
+        </div>
+
+
+
         <input type="submit" value="Submit">
 
     </form>
 
-<div id="output">
+    <div id="output">
 
-</div>
+    </div>
 </div>
 
 
@@ -130,11 +147,40 @@
             url: self.attr('action'),
             data: self.serialize(),
             success: function(response){
-                console.log(response);
+                if(response.message.dbTables.length >0) {
+                    createTablesList(response.message.dbTables)
+                } else {
+                    console.log(response.message)
+                }
             },
             dataType: 'json'
         });
     });
+
+    function createTablesList(tables){
+        $('#accordeon').fadeIn();
+        let dbTablesList = $('#dbTablesList').html('');
+
+        tables.forEach(function(table){
+            dbTablesList.append(buildTableInputBox(table));
+        });
+        bindRemoveButtons(dbTablesList);
+        $('#tableCount').html(tables.length);
+    }
+
+    function buildTableInputBox(name){
+        return '<div draggable="true" class="col-sm-12 pad-15 parentBox">\n' +
+            '                <div class="panel panel-default row">\n' +
+            '                    <div class="panel-body col-sm-8">\n' +
+            '                        <input readonly  name="tables_to_adjust[]"  type="text" class="form-control" value="'+name+'">\n' +
+            '                        <i class="glyphicon glyphicon-move pull-right"></i>\n' +
+            '                    </div>\n' +
+            '                    <div class="panel-body col-sm-4">\n' +
+            '                        <button class="btn btn-danger remove-button" type="button">Remove</button>\n' +
+            '                    </div>\n' +
+            '                </div>\n' +
+            '            </div>';
+    }
 
 </script>
 </html>
