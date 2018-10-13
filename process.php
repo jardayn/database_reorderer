@@ -30,5 +30,5 @@ function json_response($message = null, $code = 200)
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    return RequestHandler::handle($_POST);
+    RequestHandler::handle($_POST);
 }

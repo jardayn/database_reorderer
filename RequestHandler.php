@@ -15,24 +15,24 @@ class RequestHandler
             $reorderer = new Reorderer($host,$username,$password,$dbname,$port);
 
             $startColumns = isset($post['start_columns']) ? $post['start_columns'] : null;
-            $end_columns = isset($post['end_columns']) ? $post['end_columns'] : null;
+            $endColumns = isset($post['end_columns']) ? $post['end_columns'] : null;
             $dbTables = isset($post['tables_to_adjust']) ? $post['tables_to_adjust'] : null;
 
+            if(count(array_intersect($startColumns,$endColumns)) > 0) {
+                throw new Exception('You cannot have the same columns in both Start and the End sequences');
+            }
+
+
             if(isset($dbTables)){
-               echo json_response(200,200);
+               $reorderer->reorderTables($startColumns,$endColumns,$dbTables);
             } else {
                 echo json_response(['dbTables'=>$reorderer->getAllDbTables()]);
             }
+
         } catch (Exception $e) {
+//            var_dump($e->getMessage());
             echo json_response($e->getMessage(),500);
         }
-    }
-
-    public static function issetOrNull($value){
-        if(isset($value)){
-            return $value;
-        }
-        return null;
     }
 
 }
