@@ -59,7 +59,8 @@
             <input name="password"  type="text" class="form-control" id="password" placeholder="secret" value="secret">
         </div>
         <div class="form-group">
-            <label for="username"></label>
+            <label for="execute_the_queries">Execute the Queries (Not just print them)</label>
+            <input name="execute"  type="checkbox" class="form-control" id="execute_the_queries" >
         </div>
 
         <div id="start-inputs" data-arrange="html5-sortable" class="row sortable-container">
@@ -94,7 +95,7 @@
 
         <div id="accordeon" class="margin-vert-25" style="display:none">
 
-            <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#dbTablesList" aria-expanded="false" aria-controls="collapseExample">
+            <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#dbTablesList" aria-expanded="false">
                 Select Tables that need to be adjusted. Total: <span id="tableCount"></span>
             </button>
             <div class="collapse" id="dbTablesList">
@@ -103,14 +104,21 @@
 
         </div>
 
+        <div id="queriesList" class="margin-vert-25" style="display:none">
+            <button class="btn btn-success" type="button" data-toggle="collapse" data-target="#queries" aria-expanded="false">
+                All the required queries.
+            </button>
+            <div class="collapse" id="queries">
 
+            </div>
+
+        </div>
 
         <input type="submit" value="Submit">
 
     </form>
 
     <div id="output">
-
     </div>
 </div>
 
@@ -146,16 +154,22 @@
             type: "POST",
             url: self.attr('action'),
             data: self.serialize(),
-            success: function(response){
-                if(response.message.dbTables.length >0) {
-                    createTablesList(response.message.dbTables)
-                } else {
-                    console.log(response.message)
-                }
-            },
+            success: handleServerResponse,
             dataType: 'json'
         });
     });
+
+    function handleServerResponse(response){
+        if(response.message.dbTables) {
+            createTablesList(response.message.dbTables)
+        } else if(response.message.queries){
+            console.log('queries');
+            createQueriesList(response.message.queries)
+        } else {
+            console.log(response.message)
+
+        }
+    }
 
     function createTablesList(tables){
         $('#accordeon').fadeIn();
@@ -182,5 +196,17 @@
             '            </div>';
     }
 
+    function createQueriesList(queries){
+        $('#queriesList').fadeIn();
+        let List = $('#queries').html('');
+
+        queries.forEach(function(query){
+            List.append(createQuery(query));
+        });
+    }
+
+    function createQuery(query){
+        return '<p>'+query+'</p>';
+    }
 </script>
 </html>

@@ -1,7 +1,10 @@
 <?php
 include_once 'Reorderer.php';
 include_once 'RequestHandler.php';
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
+
 
 function json_response($message = null, $code = 200)
 {

@@ -11,20 +11,20 @@ class RequestHandler
             $username = $post['username'];
             $password = $post['password'];
             $dbname = $post['dbname'];
+            $executeTheQueries = isset($post['execute']) ? true : false;
 
-            $reorderer = new Reorderer($host,$username,$password,$dbname,$port);
+            $reorderer = new Reorderer($host,$username,$password,$dbname,$port,$executeTheQueries);
 
             $startColumns = isset($post['start_columns']) ? $post['start_columns'] : null;
             $endColumns = isset($post['end_columns']) ? $post['end_columns'] : null;
             $dbTables = isset($post['tables_to_adjust']) ? $post['tables_to_adjust'] : null;
 
             if(count(array_intersect($startColumns,$endColumns)) > 0) {
-                throw new Exception('You cannot have the same columns in both Start and the End sequences');
+                throw new Exception('You cannot have the same column in both Start and End sequences');
             }
 
-
             if(isset($dbTables)){
-               $reorderer->reorderTables($startColumns,$endColumns,$dbTables);
+                echo json_response(['queries'=>$reorderer->reorderTables($startColumns,$endColumns,$dbTables)]);
             } else {
                 echo json_response(['dbTables'=>$reorderer->getAllDbTables()]);
             }
