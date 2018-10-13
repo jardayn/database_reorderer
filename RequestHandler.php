@@ -13,7 +13,7 @@ class RequestHandler
             $dbname = $post['dbname'];
             $executeTheQueries = isset($post['execute']) ? true : false;
 
-            $reorderer = new Reorderer($host,$username,$password,$dbname,$port,$executeTheQueries);
+            $reorderer = new Reorderer($host,$username,$password,$dbname,$port,false);
 
             $startColumns = isset($post['start_columns']) ? $post['start_columns'] : null;
             $endColumns = isset($post['end_columns']) ? $post['end_columns'] : null;

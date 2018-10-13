@@ -137,7 +137,7 @@ class Reorderer
     private function reorderOneTable($table){
         $tableReorderingQuery = $this->generateReorderQuery($table);
         if($tableReorderingQuery && $this->executeQueries){
-            $this->executeQuery($tableReorderingQuery);
+//            $this->executeQuery($tableReorderingQuery);
         }
         return $tableReorderingQuery;
 
