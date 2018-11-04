@@ -30,7 +30,7 @@ Then click submit again.
 You'll get a list of queries that you need to run to satisfy your OCD
 
 
-##And now it's time for the quirks and features
+## And now it's time for the quirks and features
 
 ##### Will it reorder tables that are already in order?   
 If everything is in order - it will ignore the table.  
