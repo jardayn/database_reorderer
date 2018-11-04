@@ -58,8 +58,12 @@
             <label for="password">password</label>
             <input name="password"  type="text" class="form-control" id="password" placeholder="secret" value="secret">
         </div>
-        <div class="form-group">
-            <label for="execute_the_queries">Execute the Queries (Not just print them)</label>
+        <div class="alert alert-danger" id="errorBox" style="display:none">
+
+        </div>
+
+        <div class="form-group" style="display:none">
+            <label for="execute_the_queries">Execute the Queries (Not just print them. )</label>
             <input name="execute"  type="checkbox" class="form-control" id="execute_the_queries" >
         </div>
 
@@ -125,6 +129,7 @@
 
 </body>
 <script>
+    let errorBox = $('#errorBox');
     let startInputs = $('#start-inputs');
     let endInputs = $('#end-inputs');
     let startBox = startInputs.find('.parentBox')[0].outerHTML;
@@ -149,6 +154,7 @@
 
     $( "#TheOnlyDamnFormInTheApp" ).submit(function( event ) {
         event.preventDefault();
+        errorBox.fadeOut();
         let self = $(this)
         $.ajax({
             type: "POST",
@@ -162,6 +168,7 @@
     function handleServerResponse(response,status){
         let responseJSON = response.responseJSON;
         if(status === 'error'){
+            printAlertMessage(responseJSON.message);
             console.log(responseJSON.message)
         } else {
             if(responseJSON.message.hasOwnProperty('dbTables')) {
@@ -170,6 +177,7 @@
                 console.log('queries');
                 createQueriesList(responseJSON.message.queries)
             } else {
+                printAlertMessage(responseJSON.message);
                 console.log(responseJSON.message)
             }
         }
@@ -207,6 +215,11 @@
         queries.forEach(function(query){
             List.append(createQuery(query));
         });
+    }
+
+    function printAlertMessage(message){
+
+        errorBox.fadeIn().html('').html(message);
     }
 
     function createQuery(query){
