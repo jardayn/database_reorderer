@@ -7,7 +7,7 @@ and the dreams fade. And they're stuck with an ugly unordered DB.
  
 ## Come the DB Reorderer.
  
-Clone it the repo.
+Clone it the repo.  
 Enter the directory  
 Start the server
 

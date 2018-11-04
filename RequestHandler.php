@@ -1,8 +1,13 @@
 <?php
 
-
+/**
+ * Class RequestHandler
+ */
 class RequestHandler
 {
+    /**
+     * @param array $post
+     */
     public static function handle(array $post){
 //        var_dump(($post));
         try {
@@ -23,7 +28,7 @@ class RequestHandler
                 throw new Exception('You cannot have the same column in both Start and End sequences');
             }
 
-            if(isset($dbTables)){
+            if($dbTables !== null){
                 echo json_response(['queries'=>$reorderer->reorderTables($startColumns,$endColumns,$dbTables)]);
             } else {
                 echo json_response(['dbTables'=>$reorderer->getAllDbTables()]);

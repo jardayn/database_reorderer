@@ -6,6 +6,11 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 
+/**
+ * @param null $message
+ * @param int $code
+ * @return false|string
+ */
 function json_response($message = null, $code = 200)
 {
 
@@ -14,7 +19,7 @@ function json_response($message = null, $code = 200)
     // set the actual code
     http_response_code($code);
     // set the header to make sure cache is forced
-    header("Cache-Control: no-transform,public,max-age=300,s-maxage=900");
+    header('Cache-Control: no-transform,public,max-age=300,s-maxage=900');
     // treat this as json
     header('Content-Type: application/json');
     $status = array(

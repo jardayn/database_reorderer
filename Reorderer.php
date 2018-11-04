@@ -1,6 +1,8 @@
 <?php
 
-
+/**
+ * Class Reorderer
+ */
 class Reorderer
 {
     /** @var string */
@@ -19,6 +21,17 @@ class Reorderer
     /** @var array */
     private $endColumns;
 
+    /**
+     * Reorderer constructor.
+     *
+     * @param $host
+     * @param $user
+     * @param $password
+     * @param $dbname
+     * @param $port
+     * @param bool $executeQueries
+     * @throws Exception
+     */
     public function __construct($host,$user,$password,$dbname,$port,$executeQueries = false)
     {
         $this->executeQueries = $executeQueries;
@@ -32,6 +45,12 @@ class Reorderer
         }
     }
 
+    /**
+     * @param array $startColumns
+     * @param array $endColumns
+     * @param array $dbTables
+     * @return array
+     */
     public function reorderTables(array $startColumns,array $endColumns,array $dbTables){
         $this->startColumns = $startColumns;
         $this->endColumns = $endColumns;
@@ -48,6 +67,12 @@ class Reorderer
         return $queries;
     }
 
+    /**
+     * @param $tableColumns
+     * @param $proposedOrder
+     * @param bool $orderFromTheStart
+     * @return array
+     */
     private function verifyOrder($tableColumns,$proposedOrder,$orderFromTheStart = true){
         $tableColumnNames = array_column($tableColumns,'Field');
         $proposedOrder = array_intersect($proposedOrder,$tableColumnNames);
@@ -70,6 +95,10 @@ class Reorderer
         return ['previousColumn'=>$previousColumn,'updatedOrder'=>$proposedOrder];
     }
 
+    /**
+     * @param $table
+     * @return null|string
+     */
     private function generateReorderQuery($table){
         try{
             $dbColumns = $this->getDescription($table);
@@ -84,17 +113,21 @@ class Reorderer
             if($this->columnsChanged === 0){
                 return null;
             }
-//          Gotta get rid of that pesky comma.
-//          At this point, I don't even know which approach is crappier. This or checking for lastKey in the foreach
-            $length = ','.PHP_EOL;
-            return substr($query,0,(strlen($query)-strlen($length))).';';
+//            Specifying how to run these DDL operations.
+            $query.= 'ALGORITHM=INPLACE, LOCK=NONE;';
+            return $query;
 
         } catch (Exception $e){
             var_dump($e);
         }
     }
 
-
+    /**
+     * @param $columnOrder
+     * @param $dbColumns
+     * @param $query
+     * @param null $previousColumn
+     */
     private function generateColumnOrder($columnOrder,$dbColumns,&$query,$previousColumn = null){
 
         $columnOrder = array_intersect($columnOrder,array_column($dbColumns,'Field'));
@@ -115,8 +148,9 @@ class Reorderer
 
             $previousColumn = $columnName;
 //            to in_array or not to in_array, that is the question
-//            @TODO Implement support for stuff aside auto_increment
-            if(strlen($extra) >0 && strlen($extra) != 14 ){
+//            @TODO Implement support for stuff aside from auto_increment
+            $extraLength = strlen($extra);
+            if($extraLength >0 && $extraLength != 14 ){
                 die('You have something else in your extra except Auto_increment. Dont wanna break anything in yo app, will fix this later.  '.$extra);
             }
             $query .= 'MODIFY COLUMN '.$columnName.' '.$columnType.' '.$nullable.' '.$default.' '.$extra.' '.$order.','.PHP_EOL;
@@ -124,6 +158,12 @@ class Reorderer
         }
     }
 
+    /**
+     * @param $array
+     * @param $key
+     * @param $value
+     * @return null
+     */
     private function searchArrayByValue($array,$key,$value){
         foreach($array as $elem){
             if($elem[$key] === $value){
@@ -134,20 +174,33 @@ class Reorderer
         return null;
     }
 
+    /**
+     * @param $table
+     * @return null|string
+     */
     private function reorderOneTable($table){
         $tableReorderingQuery = $this->generateReorderQuery($table);
         if($tableReorderingQuery && $this->executeQueries){
+//            TODO: Implement this stuff
 //            $this->executeQuery($tableReorderingQuery);
         }
         return $tableReorderingQuery;
 
     }
 
+    /**
+     * @param $table
+     * @return array
+     */
     private function getDescription($table){
         $query = 'DESCRIBE '.$table;
         return $this->executeQuery($query);
     }
 
+    /**
+     * @param array $dbTables
+     * @return array
+     */
     public function getAllDbTables(array $dbTables = []){
         $query = "SELECT table_name FROM information_schema.tables WHERE table_schema=:dbName ";
         if(count($dbTables) > 0){
@@ -158,7 +211,12 @@ class Reorderer
         return $this->executeQuery($query,$params,PDO::FETCH_COLUMN);
     }
 
-
+    /**
+     * @param $query
+     * @param array $params
+     * @param int $fetchMode
+     * @return array
+     */
     private function executeQuery($query,array $params = [],$fetchMode = PDO::FETCH_ASSOC){
         $stmt = $this->connection->prepare($query);
 

@@ -154,20 +154,24 @@
             type: "POST",
             url: self.attr('action'),
             data: self.serialize(),
-            success: handleServerResponse,
+            complete: handleServerResponse,
             dataType: 'json'
         });
     });
 
-    function handleServerResponse(response){
-        if(response.message.dbTables) {
-            createTablesList(response.message.dbTables)
-        } else if(response.message.queries){
-            console.log('queries');
-            createQueriesList(response.message.queries)
+    function handleServerResponse(response,status){
+        let responseJSON = response.responseJSON;
+        if(status === 'error'){
+            console.log(responseJSON.message)
         } else {
-            console.log(response.message)
-
+            if(responseJSON.message.hasOwnProperty('dbTables')) {
+                createTablesList(responseJSON.message.dbTables)
+            } else if(responseJSON.message.hasOwnProperty('queries')){
+                console.log('queries');
+                createQueriesList(responseJSON.message.queries)
+            } else {
+                console.log(responseJSON.message)
+            }
         }
     }
 
