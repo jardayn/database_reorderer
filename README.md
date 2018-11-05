@@ -56,5 +56,11 @@ Whoops.
 ##### How do I get you to fix a bug/implement a new thing into DBRO?
 Make an issue or PR. I'll see what can be done.
 
+##### Why are you not copying the SCHEMA into another table, reordering it, and and then moving the data into the new reordered table?
+It's a possibility, but that'll seriously screw with large tables.
+Cos it's gonna lock them up until the data is transferred from table A to table B. Will it be much faster? Yes. But I prefer not taking my DBs down.  
+But one day, I'll add this as an option.
+
+
 ##### Is this really the most useless FAQ?
 Yes.
